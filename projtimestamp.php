@@ -1,5 +1,9 @@
 <?php
+<<<<<<< HEAD
 $timestamp_output = "";  // Detta kommer att hålla tidsstämpelutdata efter beräkning.
+=======
+<<<<<<< HEAD
+$timestamp_output = "";  // Detta kommer att hålla tidsstämpelns utdata efter beräkning.
 
 function getWeekNumber($eventDate)
 {
@@ -10,6 +14,23 @@ function getWeekNumber($eventDate)
     return $dateWeek->format('W');
 }
 
+=======
+$timestamp_output = "";  // This will hold the timestamp output after calculation.
+>>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
+
+function getWeekNumber($eventDate)
+{
+    // Skapa ett DateTime-objekt från händelsedatumet
+    $dateWeek = new DateTime($eventDate);
+
+    // Returnera ISO-8601 veckonummer
+    return $dateWeek->format('W');
+}
+<<<<<<< HEAD
+
+=======
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
+>>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
 {
     $event_date = $_GET['event_date'];
@@ -18,13 +39,25 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
     // Kontrollera om datumet är giltigt
     if (checkdate($month, $day, $year))
     {
+<<<<<<< HEAD
         $formatted_date = "$year-$month-$day"; // För tidsstämpelberäkning
+=======
+<<<<<<< HEAD
+        $formatted_date = "$year-$month-$day"; // För tidsstämpelberäkning
+=======
+        $formatted_date = "$year-$month-$day"; // For timestamp calculation
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
+>>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
         $display_date = "$day/$month/$year";
         $weekNumber = getWeekNumber($formatted_date);
 
         $timestamp = strtotime($formatted_date);
         $dayOfWeek = date("l", $timestamp);  // Fullständigt veckodagsnamn (t.ex. "Friday")
+<<<<<<< HEAD
         $dayOfMonth = date("j", $timestamp); // Dagen i månaden (t.ex. "4")
+=======
+        $dayOfMonth = date("j", $timestamp); // Dag i månaden (t.ex. "4")
+>>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
         $monthName = date("F", $timestamp);  // Fullständigt månadsnamn (t.ex. "May")
 
         // Definiera svenska motsvarigheter för veckodagar och månader
@@ -76,5 +109,6 @@ else
     $formatted_date = "Inget datum angivet!";
 }
 
+// Skriv ut tidsstämpelns utdata
 print($timestamp_output);
 ?>
