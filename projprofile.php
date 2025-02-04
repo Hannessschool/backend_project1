@@ -1,9 +1,10 @@
 <?php 
-include "projhandy_methods.php";
+include "projhandy_methods.php"; // Inkludera hjälpfunktioner
 
+// Kontrollera om användaren är inloggad
 if(!isset($_SESSION['username']))
 {
-    header("Location: projlogin.php");
+    header("Location: projlogin.php"); // Omdirigera till inloggningssidan om användaren inte är inloggad
     exit();
 }
 
@@ -13,23 +14,24 @@ if(!isset($_SESSION['username']))
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilsida</title>
+    <title>Save The Dayte</title>
     <link rel="stylesheet" href="./projstyle.css">
 </head>
 <body>
-    <div id="container">    <!-- Max width 800px -->
+    <div id="container">    <!-- Max bredd 800px -->
         <?php include "projheader.php"; ?>
         <section>
-            <h1>Profilinfo</h1>
-            Din profil:
+            <h1>Din profil</h1>
+            Profilinfo:
             <?php
+            // Visa användarens bio om den finns
             if(isset($_SESSION['bio']))
             {
                 print(htmlspecialchars(($_SESSION['bio'])));
             }
             else
             {
-                print("Ingen bio tillgänglig ännu");
+                print("Ingen bio tillgänglig ännu"); // Meddelande om ingen bio finns
             }
             ?>
             <article>
@@ -46,12 +48,13 @@ if(!isset($_SESSION['username']))
                     <textarea name="comment" id="comment" rows="3" required></textarea>
                     <input type="submit" value="Skicka kommentar" name="submit_comment">
                 </form>
-                <?php include "projcommentfield.php";?>
+                <?php include "projcommentfield.php";?> <!-- Inkludera kommentarsfält -->
             </article>
             <article>
             <h2>Profilbeskrivning</h2>
             <form action="" method="post">
                 <textarea name="profile_desc" rows="4" cols="50" required><?php
+                    // Visa befintlig profilbeskrivning om den finns
                     if (file_exists("profile_desc.txt")) {
                         print(htmlspecialchars(file_get_contents("profile_desc.txt")));
                     }
@@ -61,26 +64,23 @@ if(!isset($_SESSION['username']))
             </form>
 
             <?php
+            // Spara profilbeskrivningen om formuläret har skickats
             if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
-                $desc = trim($_POST['profile_desc']); // tar bort extra space
-                $safeDesc = htmlspecialchars($desc); // Hindrar för många HTML tags
+                $desc = trim($_POST['profile_desc']); // Ta bort extra mellanslag
+                $safeDesc = htmlspecialchars($desc); // Hindra för många HTML-taggar
                 file_put_contents("profile_desc.txt", $safeDesc);
-                print("<p>Profilbeskrivning uppdaterad!</p>");
+                print("<p>Profilbeskrivning uppdaterad!</p>"); // Meddelande om profilbeskrivningen har uppdaterats
             }
             ?>
         </article>
             <article>
-                <h2>Besöksdata</h2>
-                <?php include "projsitedata.php";?>
-            </article>
-            <article>
-                <h2>Dejt timer</h2>
+                <h1>Dejt timer</h1>
                 <form action="projprofile.php" method="get">
                     <label for="event_date">Tillägg datum för dejten (DD/MM/YYYY):</label>
                     <input type="text" id="event_date" name="event_date" placeholder="DD/MM/YYYY" required>
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Bekräfta">
                 </form>
-                <?php include "projtimestamp.php"; ?>
+                <?php include "projtimestamp.php"; ?> <!-- Inkludera tidsstämpel -->
             </article>     
     </section>
 </form>

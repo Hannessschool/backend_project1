@@ -1,5 +1,5 @@
 <?php
-$userCounterFile = 'VisitorCounter.txt';
+$userCounterFile = 'VisitorCounter.txt'; // Fil för att lagra besöksräknare
 
 function visitLog($username = null)
 {
@@ -8,41 +8,42 @@ function visitLog($username = null)
     $currentCount = 0;
     $logEntries = [];
 
-    // Check if the file exists
-    if (file_exists($userCounterFile)) {
+    // Kontrollera om filen existerar och är läsbar
+    if (file_exists($userCounterFile) && is_readable($userCounterFile)) {
         $lines = file($userCounterFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         
         if (!empty($lines[0]) && is_numeric($lines[0])) {
-            $currentCount = (int)$lines[0]; // First line is the counter
-            $logEntries = array_slice($lines, 1); // The rest are log entries
+            $currentCount = (int)$lines[0]; // Första raden är räknaren
+            $logEntries = array_slice($lines, 1); // Resten är loggposter
         }
     }
 
-    // Increase visit count
+    // Öka besöksräknaren
     $currentCount++;
 
-    // Get the timestamp
+    // Hämta tidsstämpeln
     $timestamp = date("d-m-Y H:i:s");
 
-    // If username is empty, use IP address
+    // Om användarnamnet är tomt, använd IP-adressen
     if (empty($username)) {
-        $username = $_SERVER['REMOTE_ADDR']; // Gets user's IP address
+        $username = $_SERVER['REMOTE_ADDR']; // Hämta användarens IP-adress
     }
 
-    // Add new log entry
+    // Lägg till ny loggpost
     $logEntry = "$username besökte vid tid: $timestamp";
-    array_unshift($logEntries, $logEntry); // Add to the start
+    array_unshift($logEntries, $logEntry); // Lägg till i början
 
-    // Prepare the file content
+    // Förbered filinnehållet
     $fileContent = $currentCount . PHP_EOL . implode(PHP_EOL, $logEntries) . PHP_EOL;
 
-    // Save back to the file
+    // Spara tillbaka till filen
     file_put_contents($userCounterFile, $fileContent);
 
-    // Display the visitor count
+    // Visa besöksräknaren
     print("Du är vår besökare nummer $currentCount ");
 }
 
-// Example usage:
+// Exempel på användning:
 visitLog(isset($_SESSION['username']) ? $_SESSION['username'] : null);
 ?>
+
