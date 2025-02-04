@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
 {
     $target_dir = "uploads/";
@@ -26,10 +28,22 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
         $uploadOk = 0;
     }
 
+<<<<<<< HEAD
     // Kontrollera filstorleken (500 000 B, eller 500 kB)
     if ($_FILES["fileToUpload"]["size"] > 500000)
     {
         print("OBS! Din fil är för stor.");
+=======
+    if ($_FILES["fileToUpload"]["size"] > 500000)  // 500 000 B, eller 500 kB
+     {
+        print("OBS! Din fil är för stor.");
+        $uploadOk = 0;
+    }
+
+    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
+    {
+        print("OBS! Endast JPG-, JPEG-, PNG- & GIF-files är tillåtna.");
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
         $uploadOk = 0;
     }
 
@@ -56,7 +70,10 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
             print("OBS! Det uppstod ett fel under uppladdningen av din fil");
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
     exit();
 } 
 else

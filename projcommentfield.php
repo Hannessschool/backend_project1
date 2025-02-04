@@ -43,3 +43,4 @@ if (file_exists($commentFile)) {
     print("<p>Inga kommentarer än.</p>");
 }
 ?>
+

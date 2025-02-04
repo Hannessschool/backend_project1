@@ -107,8 +107,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             } 
             else
             {
+<<<<<<< HEAD
                 // Om användarnamn eller lösenord är felaktigt, skriv ut ett felmeddelande
                 $_SESSION['login_message'] = "Felaktigt användarnamn eller lösenord. Försök igen.";
+=======
+                $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt.";
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
             }
         }
     }
@@ -165,6 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 <button onclick="toggleChangePasswordForm()">Ändra lösenord</button>
                 <form id="changePasswordForm" action="projlogin.php" method="POST" autocomplete="off" style="display:none;">
                     <input type="hidden" name="action" value="new_password">
+<<<<<<< HEAD
                     Nuvarande lösenord: <input type= "password" name="current_password" required autocomplete="off">
                     Nytt lösenord: <input type= "password" name="new_password" required autocomplete="off">
                     <input type="submit" value="Byt lösenord">
@@ -178,10 +183,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 {
                     print("Nuvarande lösenord: " . htmlspecialchars($_POST['password']) . "<br>");
                 }
+=======
+                    Nuvarande lösenordet: <input type= "password" name="current_password" required autocomplete="off">
+                    Nya lösenordet: <input type= "password" name="new_password" required autocomplete="off">
+                    <input type="submit" value="Change password">
+                </form>
+                <?php
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
                 ?>
                 <article>
-                <li><a href="projprofile.php">Gå till profil</a></li>
-                </article>    
+                <h1>Gå till profil</h1>
+                <li><a href="projprofile.php">Profil</a></li>
+                </article>
+                <article>
+                <h1>Besöksdata</h1>
+                <?php include "projsitedata.php";?>
+                </article>
+
         </section>
     </div>
 </body>

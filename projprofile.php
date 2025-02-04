@@ -36,7 +36,11 @@ if(!isset($_SESSION['username']))
             }
             ?>
             <article>
+<<<<<<< HEAD
                 <h1>Redigera profil</h1>
+=======
+            <h1>Redigera profil</h1>
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
                 <h2>Ladda upp fil</h2>
                 <form action="" method="post" enctype="multipart/form-data">
                     <label for="fileToUpload">Välj bild att ladda upp:</label>
@@ -55,7 +59,10 @@ if(!isset($_SESSION['username']))
             <h2>Profilbeskrivning</h2>
             <form action="" method="post">
                 <textarea name="profile_desc" rows="4" cols="50" required><?php
+<<<<<<< HEAD
                     // Visa profilbeskrivningen om filen finns
+=======
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
                     if (file_exists("profile_desc.txt")) {
                         print(htmlspecialchars(file_get_contents("profile_desc.txt")));
                     }
@@ -65,10 +72,16 @@ if(!isset($_SESSION['username']))
             </form>
 
             <?php
+<<<<<<< HEAD
             // Spara den nya profilbeskrivningen om formuläret skickas
             if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
                 $desc = trim($_POST['profile_desc']); // Tar bort extra space
                 $safeDesc = htmlspecialchars($desc); // Förebygger HTML tags
+=======
+            if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
+                $desc = trim($_POST['profile_desc']); // tar bort extra space
+                $safeDesc = htmlspecialchars($desc); // Hindrar för många HTML tags
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
                 file_put_contents("profile_desc.txt", $safeDesc);
                 print("<p>Profilbeskrivning uppdaterad!</p>");
             }

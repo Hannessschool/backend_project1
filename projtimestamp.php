@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 $timestamp_output = "";  // Detta kommer att hålla tidsstämpelns utdata efter beräkning.
 
 function getWeekNumber($eventDate)
@@ -10,6 +11,18 @@ function getWeekNumber($eventDate)
     return $dateWeek->format('W');
 }
 
+=======
+$timestamp_output = "";  // This will hold the timestamp output after calculation.
+
+function getWeekNumber($eventDate)
+{
+    // Create a DateTime object from the event date
+    $dateWeek = new DateTime($eventDate);
+
+    // Return the ISO-8601 week number
+    return $dateWeek->format('W');
+}
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
 {
     $event_date = $_GET['event_date'];
@@ -18,7 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
     // Kontrollera om datumet är giltigt
     if (checkdate($month, $day, $year))
     {
+<<<<<<< HEAD
         $formatted_date = "$year-$month-$day"; // För tidsstämpelberäkning
+=======
+        $formatted_date = "$year-$month-$day"; // For timestamp calculation
+>>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
         $display_date = "$day/$month/$year";
         $weekNumber = getWeekNumber($formatted_date);
 
