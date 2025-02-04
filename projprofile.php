@@ -1,8 +1,10 @@
 <?php 
 include "projhandy_methods.php";
 
+// Kontrollera om användarnamn är satt i sessionen
 if(!isset($_SESSION['username']))
 {
+    // Om användarnamn inte är satt, omdirigera till inloggningssidan
     header("Location: projlogin.php");
     exit();
 }
@@ -17,12 +19,13 @@ if(!isset($_SESSION['username']))
     <link rel="stylesheet" href="./projstyle.css">
 </head>
 <body>
-    <div id="container">    <!-- Max width 800px -->
+    <div id="container">    <!-- Maxbredd 800px -->
         <?php include "projheader.php"; ?>
         <section>
             <h1>Profilinfo</h1>
             Din profil:
             <?php
+            // Visa användarens bio om den är satt
             if(isset($_SESSION['bio']))
             {
                 print(htmlspecialchars(($_SESSION['bio'])));
@@ -32,16 +35,45 @@ if(!isset($_SESSION['username']))
                 print("Ingen bio tillgänglig ännu");
             }
             ?>
-            <a href="projprofile.php">Redigera Profil</a>
-            <form action="upload.php" method="post" enctype="multipart/form-data">
-                <label for="fileToUpload">Välj bild att ladda ner:</label>
-                <input type="file" name="fileToUpload" id="fileToUpload">
-                <input type="submit" value="Upload Image" name="submit">
-            </form>
             <article>
-                <h2>Ladda ner fil</h2>
-                <?php include "projupload.php";?>
+                <h1>Redigera profil</h1>
+                <h2>Ladda upp fil</h2>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <label for="fileToUpload">Välj bild att ladda upp:</label>
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Bekräfta uppladdning" name="submit">
+                </form>
+                <h2>Kommentarsfält</h2>
+                <form action="" method="post">
+                    <label for="comment">Lämna en kommentar:</label>
+                    <textarea name="comment" id="comment" rows="3" required></textarea>
+                    <input type="submit" value="Skicka kommentar" name="submit_comment">
+                </form>
+                <?php include "projcommentfield.php";?>
             </article>
+            <article>
+            <h2>Profilbeskrivning</h2>
+            <form action="" method="post">
+                <textarea name="profile_desc" rows="4" cols="50" required><?php
+                    // Visa profilbeskrivningen om filen finns
+                    if (file_exists("profile_desc.txt")) {
+                        print(htmlspecialchars(file_get_contents("profile_desc.txt")));
+                    }
+                ?></textarea>
+                <br>
+                <input type="submit" value="Spara" name="save_desc">
+            </form>
+
+            <?php
+            // Spara den nya profilbeskrivningen om formuläret skickas
+            if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
+                $desc = trim($_POST['profile_desc']); // Tar bort extra space
+                $safeDesc = htmlspecialchars($desc); // Förebygger HTML tags
+                file_put_contents("profile_desc.txt", $safeDesc);
+                print("<p>Profilbeskrivning uppdaterad!</p>");
+            }
+            ?>
+        </article>
             <article>
                 <h2>Besöksdata</h2>
                 <?php include "projsitedata.php";?>
@@ -51,7 +83,7 @@ if(!isset($_SESSION['username']))
                 <form action="projprofile.php" method="get">
                     <label for="event_date">Tillägg datum för dejten (DD/MM/YYYY):</label>
                     <input type="text" id="event_date" name="event_date" placeholder="DD/MM/YYYY" required>
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Bekräfta">
                 </form>
                 <?php include "projtimestamp.php"; ?>
             </article>     

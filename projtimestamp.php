@@ -1,22 +1,33 @@
 <?php
-$timestamp_output = "";  // This will hold the timestamp output after calculation.
+$timestamp_output = "";  // Detta kommer att hålla tidsstämpelns utdata efter beräkning.
+
+function getWeekNumber($eventDate)
+{
+    // Skapa ett DateTime-objekt från händelsedatumet
+    $dateWeek = new DateTime($eventDate);
+
+    // Returnera ISO-8601 veckonummer
+    return $dateWeek->format('W');
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
 {
     $event_date = $_GET['event_date'];
     list($day, $month, $year) = explode("/", $event_date);
 
-    
+    // Kontrollera om datumet är giltigt
     if (checkdate($month, $day, $year))
     {
-        $formatted_date = "$year-$month-$day"; // For timestamp calculation
-        $display_date = "$day/$month/$year"; 
+        $formatted_date = "$year-$month-$day"; // För tidsstämpelberäkning
+        $display_date = "$day/$month/$year";
+        $weekNumber = getWeekNumber($formatted_date);
 
         $timestamp = strtotime($formatted_date);
-        $dayOfWeek = date("l", $timestamp);  // Full weekday name (e.g., "Friday")
-        $dayOfMonth = date("j", $timestamp); // Day of the month (e.g., "4")
-        $monthName = date("F", $timestamp);  // Full month name (e.g., "May")
+        $dayOfWeek = date("l", $timestamp);  // Fullständigt veckodagsnamn (t.ex. "Friday")
+        $dayOfMonth = date("j", $timestamp); // Dag i månaden (t.ex. "4")
+        $monthName = date("F", $timestamp);  // Fullständigt månadsnamn (t.ex. "May")
 
-        // Define Swedish equivalents for weekdays and months
+        // Definiera svenska motsvarigheter för veckodagar och månader
         $weekdays = [
             "Monday"    => "måndag",
             "Tuesday"   => "tisdag",
@@ -42,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
             "December"  => "december"
         ];
         
-        // Get the Swedish names for the day of the week and month
+        // Hämta de svenska namnen för veckodagen och månaden
         $swedishDay = isset($weekdays[$dayOfWeek]) ? $weekdays[$dayOfWeek] : $dayOfWeek;
         $swedishMonth = isset($months[$monthName]) ? $months[$monthName] : $monthName;
 
@@ -53,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
         $minutes = floor(($diff % 3600) / 60);
         $seconds = $diff % 60;
 
-        $timestamp_output = "Din dejt är $swedishDay den $dayOfMonth:e $swedishMonth $year. \n Det är $days dagar, $hours timmar, $minutes minuter, och $seconds sekunder tills din dejt.";
+        $timestamp_output = "Din dejt är $swedishDay den $dayOfMonth:e $swedishMonth $year under vecka $weekNumber. \n Det är $days dagar, $hours timmar, $minutes minuter, och $seconds sekunder tills din dejt.";
     } 
     else
     {
@@ -65,5 +76,6 @@ else
     $formatted_date = "Inget datum angivet!";
 }
 
+// Skriv ut tidsstämpelns utdata
 print($timestamp_output);
 ?>

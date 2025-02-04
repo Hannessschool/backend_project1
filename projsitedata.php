@@ -1,30 +1,49 @@
 <?php
-
 $userCounterFile = 'VisitorCounter.txt';
-function visitLog($username)
+
+function visitLog($username = null)
 {
     global $userCounterFile;
 
     $currentCount = 0;
-    if(file_exists($userCounterFile))
-    {
-        $lines = file($userCounterFile, FILE_IGNORE_NEW_LINES);
-        if(!empty($lines[0]))
-        {
-            $currentCount = (int)$lines[0];
+    $logEntries = [];
+
+    // Kontrollera om filen finns
+    if (file_exists($userCounterFile)) {
+        $lines = file($userCounterFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        
+        if (!empty($lines[0]) && is_numeric($lines[0])) {
+            $currentCount = (int)$lines[0]; // Första raden är räknaren
+            $logEntries = array_slice($lines, 1); // Resten är loggposter
         }
     }
 
+    // Öka besöksräknaren
     $currentCount++;
+
+    // Hämta tidsstämpeln
     $timestamp = date("d-m-Y H:i:s");
 
-    $logEntry = $username. 'besökte vid tid: '.$timestamp;
-    $fileContent = $currentCount.PHP_EOL.$logEntry.PHP_EOL;
-    if(file_exists($userCounterFile))
-    {
-        $fileContent.= file_get_contents($userCounterFile, false, null, strlen($lines[0]) + 1);
+    // Om användarnamnet är tomt, använd IP-adressen
+    if (empty($username)) {
+        $username = $_SERVER['REMOTE_ADDR']; // Hämtar användarens IP-adress
     }
+
+    // Lägg till ny loggpost
+    $logEntry = "$username besökte vid tid: $timestamp";
+    array_unshift($logEntries, $logEntry); // Lägg till i början
+
+    // Förbered filinnehållet
+    $fileContent = $currentCount . PHP_EOL . implode(PHP_EOL, $logEntries) . PHP_EOL;
+
+    // Spara tillbaka till filen
     file_put_contents($userCounterFile, $fileContent);
-    print("Du är vår " . $currentCount. " besökare");
+
+    // Visa besöksräknaren
+    print("Du är vår besökare nummer $currentCount ");
 }
+
+// Exempel på användning:
+visitLog(isset($_SESSION['username']) ? $_SESSION['username'] : null);
 ?>
+
