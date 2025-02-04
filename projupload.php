@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
 {
     $target_dir = "uploads/";
@@ -11,52 +13,54 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
     if($check !== false)
     {
-        print("File is an image - " . $check["mime"] . ".");
+        print("Filen är ett foto - " . $check["mime"] . ".");
         $uploadOk = 1;
     }
     else
     {
-        print("File is not an image.");
+        print("Filen är inte ett foto.");
         $uploadOk = 0;
     }
     
 
     if (file_exists($target_file)) 
     {
-        print("Sorry, file already exists.");
+        print("OBS! Denna filen existerar redan.");
         $uploadOk = 0;
     }
 
     if ($_FILES["fileToUpload"]["size"] > 500000)  // 500 000 B, eller 500 kB
      {
-        print("Sorry, your file is too large.");
+        print("OBS! Din fil är för stor.");
         $uploadOk = 0;
     }
 
     if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
     {
-        print("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+        print("OBS! Endast JPG-, JPEG-, PNG- & GIF-files är tillåtna.");
         $uploadOk = 0;
     }
 
     if($uploadOk == 0)
     {
-        print("Sorry, your file was not uploaded");
+        print("Beklagar, uppladdningen lyckades inte.");
     }
     else
     {
         if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
         {
-            print("The file ".basename($_FILES["fileToUpload"]["name"]). " has been uploaded.");
+            print("Filen ".basename($_FILES["fileToUpload"]["name"]). " har laddats upp");
         }
         else
         {
-            print("Sorry, there was an error uploading your file.");
+            print("OBS! Det uppstod ett fel under uppladdningen av din fil");
         }
     }
-}
+    exit();
+} 
 else
 {
-    "No file was uploaded or form was not submitted";
+    $_SESSION['upload_message'] = "Ingen fil uppladdades eller skickades.";
+    exit();
 }
 ?>

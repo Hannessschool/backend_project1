@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             } 
             else
             {
-                $_SESSION['login_message'] = "Incorrect username or password. Please try again.";
+                $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt.";
             }
         }
     }
@@ -161,23 +161,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 <button onclick="toggleChangePasswordForm()">Ändra lösenord</button>
                 <form id="changePasswordForm" action="projlogin.php" method="POST" autocomplete="off" style="display:none;">
                     <input type="hidden" name="action" value="new_password">
-                    Current Password: <input type= "password" name="current_password" required autocomplete="off">
-                    New Password: <input type= "password" name="new_password" required autocomplete="off">
+                    Nuvarande lösenordet: <input type= "password" name="current_password" required autocomplete="off">
+                    Nya lösenordet: <input type= "password" name="new_password" required autocomplete="off">
                     <input type="submit" value="Change password">
                 </form>
                 <?php
-                if (isset($_POST['username']))
-                {
-                    print("Current Username: " . htmlspecialchars($_POST['username']) . "<br>");
-                }
-                if (isset($_POST['password']))
-                {
-                    print("Current Password: " . htmlspecialchars($_POST['password']) . "<br>");
-                }
                 ?>
                 <article>
-                <li><a href="projprofile.php">Gå till profil</a></li>
-                </article>    
+                <h1>Gå till profil</h1>
+                <li><a href="projprofile.php">Profil</a></li>
+                </article>
+                <article>
+                <h1>Besöksdata</h1>
+                <?php include "projsitedata.php";?>
+                </article>
+
         </section>
     </div>
 </body>

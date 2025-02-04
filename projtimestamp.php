@@ -1,5 +1,14 @@
 <?php
 $timestamp_output = "";  // This will hold the timestamp output after calculation.
+
+function getWeekNumber($eventDate)
+{
+    // Create a DateTime object from the event date
+    $dateWeek = new DateTime($eventDate);
+
+    // Return the ISO-8601 week number
+    return $dateWeek->format('W');
+}
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
 {
     $event_date = $_GET['event_date'];
@@ -9,7 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
     if (checkdate($month, $day, $year))
     {
         $formatted_date = "$year-$month-$day"; // For timestamp calculation
-        $display_date = "$day/$month/$year"; 
+        $display_date = "$day/$month/$year";
+        $weekNumber = getWeekNumber($formatted_date);
 
         $timestamp = strtotime($formatted_date);
         $dayOfWeek = date("l", $timestamp);  // Full weekday name (e.g., "Friday")
@@ -53,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['event_date']))
         $minutes = floor(($diff % 3600) / 60);
         $seconds = $diff % 60;
 
-        $timestamp_output = "Din dejt är $swedishDay den $dayOfMonth:e $swedishMonth $year. \n Det är $days dagar, $hours timmar, $minutes minuter, och $seconds sekunder tills din dejt.";
+        $timestamp_output = "Din dejt är $swedishDay den $dayOfMonth:e $swedishMonth $year under vecka $weekNumber. \n Det är $days dagar, $hours timmar, $minutes minuter, och $seconds sekunder tills din dejt.";
     } 
     else
     {

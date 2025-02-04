@@ -32,16 +32,43 @@ if(!isset($_SESSION['username']))
                 print("Ingen bio tillgänglig ännu");
             }
             ?>
-            <a href="projprofile.php">Redigera Profil</a>
-            <form action="upload.php" method="post" enctype="multipart/form-data">
-                <label for="fileToUpload">Välj bild att ladda ner:</label>
-                <input type="file" name="fileToUpload" id="fileToUpload">
-                <input type="submit" value="Upload Image" name="submit">
-            </form>
             <article>
-                <h2>Ladda ner fil</h2>
-                <?php include "projupload.php";?>
+            <h1>Redigera profil</h1>
+                <h2>Ladda upp fil</h2>
+                <form action="" method="post" enctype="multipart/form-data">
+                    <label for="fileToUpload">Välj bild att ladda upp:</label>
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Bekräfta uppladdning" name="submit">
+                </form>
+                <h2>Kommentarsfält</h2>
+                <form action="" method="post">
+                    <label for="comment">Lämna en kommentar:</label>
+                    <textarea name="comment" id="comment" rows="3" required></textarea>
+                    <input type="submit" value="Skicka kommentar" name="submit_comment">
+                </form>
+                <?php include "projcommentfield.php";?>
             </article>
+            <article>
+            <h2>Profilbeskrivning</h2>
+            <form action="" method="post">
+                <textarea name="profile_desc" rows="4" cols="50" required><?php
+                    if (file_exists("profile_desc.txt")) {
+                        print(htmlspecialchars(file_get_contents("profile_desc.txt")));
+                    }
+                ?></textarea>
+                <br>
+                <input type="submit" value="Spara" name="save_desc">
+            </form>
+
+            <?php
+            if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
+                $desc = trim($_POST['profile_desc']); // tar bort extra space
+                $safeDesc = htmlspecialchars($desc); // Hindrar för många HTML tags
+                file_put_contents("profile_desc.txt", $safeDesc);
+                print("<p>Profilbeskrivning uppdaterad!</p>");
+            }
+            ?>
+        </article>
             <article>
                 <h2>Besöksdata</h2>
                 <?php include "projsitedata.php";?>

@@ -20,3 +20,11 @@ header{
     background-color: palevioletred;
     color: black;
 }
+
+h1{
+    font-size: 15;
+}
+
+h2{
+    font-size: 11;
+}
