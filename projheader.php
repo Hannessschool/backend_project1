@@ -12,9 +12,12 @@
                 print("<li><a href='projprofile.php'>Profil</a></li>");
                 print("<li><a href='projlogin.php'>Huvudmenyn</a></li>");
                 print("<li><a href='projlogout.php'>Logga ut</a></li>");
+                print("<li><a href='projreport.php'>Rapport</a></li>");
             } else {
                 // Om användaren inte är inloggad, visa inloggningslänken
                 print("<li><a href='projlogin.php'>Logga in</a></li>");
+                print("<li><a href='projreport.php'>Rapport</a></li>");
+
             }
             ?>
         </ul>
