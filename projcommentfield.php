@@ -1,11 +1,7 @@
 <?php
 $commentFile = "comments.txt"; // Fil för att lagra kommentarer
 
-<<<<<<< HEAD
 // Kontrollera om kommentarsformuläret har skickats och om kommentaren inte är tom
-=======
-// Kontrollera om kommentarsformuläret har skickats och kommentaren inte är tom
->>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
 if (isset($_POST['submit_comment']) && !empty($_POST['comment'])) {
     // Kontrollera om användaren är inloggad
     if (!isset($_SESSION['username'])) {
@@ -21,11 +17,7 @@ if (isset($_POST['submit_comment']) && !empty($_POST['comment'])) {
         // Skapa kommentarsinlägget
         $newEntry = "$username | $timestamp | $safeComment" . PHP_EOL;
 
-<<<<<<< HEAD
         // Lägg till kommentaren överst i filen för att visa de senaste kommentarerna först
-=======
-        // Lägg till kommentaren i början för att säkerställa att de nyaste kommentarerna visas först
->>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
         if (file_exists($commentFile)) {
             $oldContent = file_get_contents($commentFile);
             file_put_contents($commentFile, $newEntry . $oldContent);

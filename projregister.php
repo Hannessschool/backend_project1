@@ -84,9 +84,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 Lösenord: <input type="password" name="password" required autocomplete="off">
                 <input type="submit" value="Registrera">
             </form>
-            <p>Har du redan konto sedan tidigare? <a href="projlogin.php">Logga in här</a></p>
+            <p>Har du redan konto sen tidigare? <a href="projlogin.php">Logga in här</a></p>
         </section>
     </div>
 </body>
 </html>
+
 

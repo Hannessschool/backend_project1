@@ -28,7 +28,6 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
         $uploadOk = 0; // Uppladdningen är inte OK
     }
 
-<<<<<<< HEAD
     // Kontrollera filstorleken (500 000 B, eller 500 kB)
     if ($_FILES["fileToUpload"]["size"] > 500000)
     {
@@ -44,35 +43,6 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
     }
 
     // Kontrollera om uppladdningen är OK
-=======
-<<<<<<< HEAD
-    // Kontrollera filstorleken (500 000 B, eller 500 kB)
-    if ($_FILES["fileToUpload"]["size"] > 500000)
-    {
-        print("OBS! Din fil är för stor.");
-=======
-    if ($_FILES["fileToUpload"]["size"] > 500000)  // 500 000 B, eller 500 kB
-     {
-        print("OBS! Din fil är för stor.");
-        $uploadOk = 0;
-    }
-
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
-    {
-        print("OBS! Endast JPG-, JPEG-, PNG- & GIF-files är tillåtna.");
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-        $uploadOk = 0;
-    }
-
-    // Tillåt endast JPG och PNG-filer
-    if($imageFileType != "jpg" && $imageFileType != "png")
-    {
-        print("OBS! Endast JPG och PNG-filer är tillåtna.");
-        $uploadOk = 0;
-    }
-
-    // Kontrollera om uppladdningen lyckades
->>>>>>> 0deaa6eddb4fe890e7fb3fe3da867874caec9c1c
     if($uploadOk == 0)
     {
         print("Beklagar, uppladdningen lyckades inte."); // Meddelande om uppladdningen misslyckades
@@ -89,10 +59,6 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
             print("OBS! Det uppstod ett fel under uppladdningen av din fil."); // Meddelande om fel vid uppladdningen
         }
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
     exit();
 } 
 else
@@ -101,3 +67,4 @@ else
     exit();
 }
 ?>
+
