@@ -7,7 +7,7 @@ error_reporting(E_ALL); // Aktivera felrapportering
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
     $username = test_input($_POST['username']);
-    $password = test_input($_POST['password']);
+    $email = test_input($_POST['email']);
 
     if (!empty($username) && !empty($password))
     {
@@ -32,13 +32,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         }
         else
         {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
             // Lagra användaren i sessionen för enkelhetens skull (i en riktig applikation skulle du lagra detta i en databas)
             $_SESSION['users'][] = [
                 'username' => $username,
-                'password' => $hashed_password
+                'email' => $email
             ];
+
+            // Tillåtna tecken för lösenordet
+            $allowedChars = array("a", "b", "c", 1, 2, 3); // kan lägga till fler tecken om du vill
+            $password = "";
+
+            // Generera ett slumpmässigt lösenord
+            for ($i = 0; $i < 8; $i++) { // Lösenordet ska vara 8 tecken långt (kan ändras)
+                $randomIndex = rand(0, count($allowedChars) - 1); // Välj ett slumpmässigt index från arrayen
+                $password .= $allowedChars[$randomIndex]; // Lägg till tecknet i lösenordet
+            }
+
+            // Skicka lösenordet via e-post
+            $to = "someone@example.com";
+            $subject = "Your password";
+            $message = "Your new password is: " . $password;
+            $headers = "From: no-reply@example.com"; // Här kan du ange din egen avsändaradress
+
+            // Skicka e-post
+            if(mail($to, $subject, $message, $headers))
+            {
+                print("Lösenord skickat till " . $to . "<br>");
+            } 
+            else
+            {
+                print("Misslyckades med att skicka e-post.<br>");
+            }
 
             // Sätt en cookie för första besöket
             if (!isset($_COOKIE['first_visit']))
@@ -57,7 +81,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $_SESSION['register_message'] = "Vänligen fyll i båda fälten."; // Meddelande om att fylla i båda fälten
     }
 }
+
+// Tillåtna tecken för lösenordet
+$allowedChars = array("a", "b", "c", 1, 2, 3); // kan lägga till fler tecken om du vill
+$password = "";
+
+// Generera ett slumpmässigt lösenord
+for ($i = 0; $i < 8; $i++) { // Lösenordet ska vara 8 tecken långt (kan ändras)
+    $randomIndex = rand(0, count($allowedChars) - 1); // Välj ett slumpmässigt index från arrayen
+    $password .= $allowedChars[$randomIndex]; // Lägg till tecknet i lösenordet
+}
+
+// Skicka lösenordet via e-post
+$to = "someone@example.com";
+$subject = "Your password";
+$message = "Your new password is: " . $password;
+$headers = "From: no-reply@example.com"; // Här kan du ange din egen avsändaradress
+
+// Skicka e-post
+if(mail($to, $subject, $message, $headers)) {
+    print("Lösenord skickat till " . $to . "<br>");
+} else {
+    print("Misslyckades med att skicka e-post.<br>");
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             ?>
             <form action="projregister.php" method="POST" autocomplete="off">
                 Användarnamn: <input type="text" name="username" required autocomplete="off">
-                Lösenord: <input type="password" name="password" required autocomplete="off">
+                E-post: <input type="text" name="email" required autocomplete="off">
                 <input type="submit" value="Registrera">
             </form>
             <p>Har du redan konto sen tidigare? <a href="projlogin.php">Logga in här</a></p>
@@ -89,5 +138,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     </div>
 </body>
 </html>
-
-

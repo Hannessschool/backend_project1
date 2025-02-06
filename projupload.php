@@ -36,35 +36,28 @@ if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
     }
 
     // Tillåt endast vissa filtyper
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif")
+    if(!in_array($imageFileType, ['jpg','png']))
     {
-        print("OBS! Endast JPG-, JPEG-, PNG- & GIF-filer är tillåtna.");
+        print("OBS! Endast JPG- & PNG- är tillåtna.");
         $uploadOk = 0; // Uppladdningen är inte OK
     }
 
     // Kontrollera om uppladdningen är OK
-    if($uploadOk == 0)
+    if($uploadOk == 1)
+    if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
     {
-        print("Beklagar, uppladdningen lyckades inte."); // Meddelande om uppladdningen misslyckades
+        $_SESSION['upload_message'] = "Filen ".basename($_FILES["fileToUpload"]["name"]). " har laddats upp."; // Meddelande om uppladdningen lyckades
+        $_SESSION['uploaded_image'] = basename($_FILES["fileToUpload"]["name"]);
     }
     else
     {
-        // Försök att ladda upp filen
-        if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
-        {
-            print("Filen ".basename($_FILES["fileToUpload"]["name"]). " har laddats upp."); // Meddelande om uppladdningen lyckades
-        }
-        else
-        {
-            print("OBS! Det uppstod ett fel under uppladdningen av din fil."); // Meddelande om fel vid uppladdningen
-        }
+        $_SESSION['upload_message'] = "OBS! Det uppstod ett fel under uppladdningen av din fil."; // Meddelande om fel vid uppladdningen
     }
-    exit();
-} 
+}
 else
 {
     $_SESSION['upload_message'] = "Ingen fil uppladdades eller skickades."; // Meddelande om ingen fil uppladdades eller skickades
-    exit();
 }
+
 ?>
 

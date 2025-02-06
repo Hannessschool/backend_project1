@@ -12,7 +12,7 @@ body{
     background-color:white;
     max-width:800px;
     margin: auto;
-    min-height:1000px; 
+    min-height:1200px; 
     color:black;
 }
 
@@ -23,6 +23,16 @@ header{
     padding: 20px;
 }
 
+.uploaded-image-container {
+    margin-top: 20px; /* Space above the image */
+    text-align: center; /* Center the image */
+}
+
+.uploaded-image-container img {
+    max-width: 100px; /* Make the image responsive */
+    max-height: 100px; /* Maintain the aspect ratio */
+}
+
 h1{
     font-size: 18;
 }
@@ -31,7 +41,37 @@ h2{
     font-size: 14;
 }
 
+p{
+    font-size: 12;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 nav ul {
     list-style-type: none;
 }
-   
+
+.profile-description-container {
+    background-color: #f4f4f4; /* Light gray background */
+    padding: 20px; /* Some padding around the description */
+    border-radius: 10px; /* Round the corners for a smoother look */
+    margin-top: 20px; /* Space from the top (for better visual separation) */
+    color: black; /* Black text */
+}
+
+.profile-description-container h2 {
+    font-size: 16px; /* Larger font size for the description title */
+    color: #333; /* Darker color for the title */
+}
+
+.profile-description-container p {
+    font-size: 14px; /* Slightly larger text for the description */
+    line-height: 1.5; /* Better spacing between lines */
+}
+
+textarea {
+    padding: 10px; /* Adds some padding around the text inside the textarea */
+    text-align: left; /* Ensures the text is aligned to the left */
+    vertical-align: top; /* Ensures the text starts from the top */
+    resize: vertical; /* Optional: Allow the user to resize the textarea vertically */
+}
