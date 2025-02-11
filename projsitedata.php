@@ -62,10 +62,10 @@ function visitLog($username = null)
 
     // Näytetään uniikkien kävijöiden määrä
     // Visa antal unika besökare
-    print("Du är besökare nummer $currentCount");
-    print(". Serverns ip:".$_SERVER['SERVER_ADDR']);
-    print(". Skriptet som körs:".$_SERVER['PHP_SELF']);
-    print(". Tidszon: " . date_default_timezone_get());
+    print("Du är besökare nummer $currentCount.");
+    print("<br> Serverns ip:".$_SERVER['SERVER_ADDR'].".");
+    print("<br> Skriptet som körs:".$_SERVER['PHP_SELF'].".");
+    print("<br> Tidszon: " . date_default_timezone_get().".");
 #phpinfo(););
 }
 

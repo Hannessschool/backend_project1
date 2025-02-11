@@ -88,17 +88,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                 {
                     setcookie('first_visit', time(), time() + (86400 * 30), "/");
                     $_SESSION['first_visit_time'] = date("d-m-Y H:i:s");
-                    $_SESSION['login_message'] = "Hej $username,\n\nDitt konto har skapats. Ditt lösenord är: $password\n\nVänligen ändra ditt lösenord efter inloggning.";
+                    $_SESSION['login_message'] = "<br> Hej $username, <br> ditt konto har skapats. Ditt lösenord är: $password.<br> Vänligen ändra ditt lösenord efter inloggning.";
                 }
                 else
                 {
                     $firstVisitTime = isset($_SESSION['first_visit_time']) ? $_SESSION['first_visit_time'] : date("d-m-Y H:i:s", $_COOKIE['first_visit']);
-                    $_SESSION['login_message'] = "Välkommen tillbaka, $username! Ditt senaste besök var: $firstVisitTime";
+                    $_SESSION['login_message'] = "<br>Välkommen tillbaka, $username!<br> Ditt senaste besök var: $firstVisitTime";
                 }
 
                 if ($username == "eerolaha@arcada")
                 {
-                    $_SESSION['login_message'] = "Välkommen master Hannes. Omdirigerar till profilen";
+                    $_SESSION['login_message'] = "<br> Välkommen master Hannes. Omdirigerar till profilen";
                     header("Refresh: 3; url=projprofile.php"); // Omdirigera till profilen efter 3 sekunder
                     exit();
                 }
@@ -151,7 +151,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
                     Nya lösenordet: <input type="password" name="new_password" required autocomplete="off">
                     <input type="submit" value="Change password">
                     </form>');
-                print("<h1>Gå till profil</h1>");
+                
+                print('<h1>Gå till profil, ' . htmlspecialchars($_SESSION['username']) . '</h1>');
                 print('<li><a href="projprofile.php">Profil</a></li>');
                 print('<h1>Besöksdata</h1>');
                 include "projsitedata.php"; // Inkludera besöksdata

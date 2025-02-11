@@ -41,10 +41,24 @@ h2{
     font-size: 14;
 }
 
-p{
-    font-size: 12;
+h3{
+    font-size:18;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+p{
+    font-size: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+article {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
 nav ul {
@@ -70,8 +84,17 @@ nav ul {
 }
 
 textarea {
-    padding: 10px; /* Adds some padding around the text inside the textarea */
+    padding: 2px; /* Adds some padding around the text inside the textarea */
     text-align: left; /* Ensures the text is aligned to the left */
     vertical-align: top; /* Ensures the text starts from the top */
     resize: vertical; /* Optional: Allow the user to resize the textarea vertically */
+}
+
+.subtle-username {
+    display: block; /* Ensures it occupies its own line */
+    font-size: 25px; /* Smaller font size for reduced prominence */
+    color: #333131; /* Dark gray color for subtle visibility */
+    margin-top: 10px; /* Slight spacing from surrounding elements */
+    text-align: right; /* Text to the right*/
+    margin-right: 5px;
 }

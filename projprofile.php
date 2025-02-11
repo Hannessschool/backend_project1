@@ -8,6 +8,16 @@ if(!isset($_SESSION['username']))
     exit();
 }
 
+if (isset($_POST['save_desc']) && isset($_POST['profile_desc']))
+ {
+    $desc = trim($_POST['profile_desc']); // Ta bort extra space
+    $safeDesc = htmlspecialchars($desc); // Förhindra för många HTML tags
+    file_put_contents("profile_desc.txt", $safeDesc);
+    $_SESSION['profile_desc_updated'] = true; // Sätt en sessionsvariable för att indikera att profilbeskrivningen var uppdaterad
+    header("Location: " . $_SERVER['PHP_SELF']."?updated=true"); // Omdirigera till annat ställe på sidan
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +34,10 @@ if(!isset($_SESSION['username']))
             <h1>Din profil</h1>
             Profilinfo:
             <?php
+            if (isset($_SESSION['username'])) 
+            {
+                print("<span class='subtle-username'>". htmlspecialchars($_SESSION['username']) . "</span>");
+            }     
             // Visa uppladdade filen om sådan finns
             if (isset($_SESSION['uploaded_image']))
             {
@@ -57,34 +71,37 @@ if(!isset($_SESSION['username']))
                     <input type="submit" value="Bekräfta uppladdning" name="submit">
                 </form>
             </article>
-
             <article>
             <h2>Profilbeskrivning</h2>
-            <form action="" method="post">
+            <form action="" method="post" onsubmit="clearTextarea()">
                 <textarea name="profile_desc" rows="4" cols="50" required>
-                <?php
-                    // Visa befintlig profilbeskrivning om den finns
-                    if (file_exists("profile_desc.txt")) {
-                        print(htmlspecialchars(file_get_contents("profile_desc.txt")));
-                    }
-                ?>
                 </textarea>
                 <br>
+                <input type="hidden" name="form_submitted" value="1">
                 <input type="submit" value="Spara" name="save_desc">
             </form>
             <?php
-            // Spara profilbeskrivningen om formuläret har skickats
-            if (isset($_POST['save_desc']) && isset($_POST['profile_desc']))
+            if(isset($_SESSION['profile_desc_updated']))
             {
-                $desc = trim($_POST['profile_desc']); // Ta bort extra mellanslag
-                $safeDesc = htmlspecialchars($desc); // Hindra för många HTML-taggar
-                file_put_contents("profile_desc.txt", $safeDesc);
-                print("<p>Profilbeskrivning uppdaterad!</p>"); // Meddelande om profilbeskrivningen har uppdaterats
-                
-                print('<script type="text/javascript">document.getElementById("profile_desc").value = "";</script>');
+                print("<p>Profilbeskrivning uppdaterad!</p>"); //meddelande som bekräftar lyckad postande av profilbeskrivninh
+                unset($_SESSION['profile_desc_updated']); //nollställ sessionvariabeln
             }
             ?>
         </article>
+        <script>
+            function clearTextarea()
+            {
+                document.getElementById('profile_desc').value = '';
+            }
+
+            window.onload = function()
+            {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('updated') && urlParams.get('updated') === 'true') {
+                    clearTextarea();
+                }
+            };
+            </script>
         <article>
             <h2>Kommentarsfält</h2>
             <form action="" method="post">
