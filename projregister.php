@@ -1,21 +1,17 @@
 <?php
 require_once "projhandy_methods.php"; // Inkludera hjälpfunktioner
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL); // Aktivera felrapportering
 
-
-// Funktio validoinnille
+// Funktion för validering
 function validate_input($data) {
     return htmlspecialchars(stripslashes(trim($data)));
 }
 
-// Tarkista, onko lomake lähetetty
+// Kolla ifall formen har skickats på nytt
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = validate_input($_POST['username']);
     $email = validate_input($_POST['email']);
 
-    // Perusvalidointi
+    // Validering
     if (empty($username) || empty($email)) {
         $_SESSION['message'] = "Användarnamn och e-post måste fyllas i!";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -23,10 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (strlen($username) < 3 || strlen($username) > 20) {
         $_SESSION['message'] = "Användarnamnet måste vara 3-20 tecken långt!";
     } else {
-        // Luo satunnainen salasana (8 merkin pituinen)
+        // Skapande av lösenord på 8 tecken
         $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, 8);
 
-        // Lähetä sähköposti
+        // Skicka email
         $to = $email;
         $subject = "Ditt nya lösenord";
         $message = "Hej $username!\n\nDitt nya lösenord är: $password\n\nVänligen ändra ditt lösenord efter inloggning.";
@@ -34,12 +30,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (mail($to, $subject, $message, $headers)) {
             $_SESSION['message'] = "Registrering lyckades! Kontrollera din e-post för lösenordet.";
+            $_SESSION['users'][] = [
+                'username' => $username, // Email as username
+                'password' => password_hash($password, PASSWORD_DEFAULT)
+            ];
         } else {
+            error_log("Email sending failed to $email");
             $_SESSION['message'] = "Ett fel uppstod vid e-postleveransen.";
         }
     }
 
-    // Uudelleenohjaus
+    // Omdirigering
     header("Location: projregister.php");
     exit();
 }
@@ -64,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         print('<li><a href="projlogin.php">Gå till inloggingen</a></li>');
         ?>
+    </div>
 </body>
 </html>
 

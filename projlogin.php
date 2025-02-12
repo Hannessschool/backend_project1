@@ -1,6 +1,7 @@
 <?php
 include_once "projhandy_methods.php"; // Inkludera hjälpfunktioner
 include_once "projpasswordhandling.php"; // Inkludera lösenordshantering
+include "projregister.php";
 
 $register_message = isset($_SESSION['register_message']) ? $_SESSION['register_message'] : ''; // Hämta registreringsmeddelande från sessionen
 unset($_SESSION['register_message']); // Ta bort registreringsmeddelandet från sessionen
@@ -24,33 +25,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $currentPassword = $_POST['current_password'];
         $newPassword = $_POST['new_password'];
 
+        $username = $_SESSION['username']; // Ensure $username is set
         $user_found = false;
-        // Loop genom användare för att hitta den aktuella användaren
+        // Loopa genom användare för att hitta den aktuella användaren
         foreach ($_SESSION['users'] as &$user)
         {
-            if ($user['username'] === $_SESSION['username'])
+            if ($user['username'] === $username && password_verify($currentPassword, $user['password']))
             {
                 // Verifiera nuvarande lösenord
                 if (password_verify($currentPassword, $user['password']))
                 {
-                    // Hasha nytt lösenord och uppdatera
-                    $user['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $user['password'] = password_hash($newPassword, PASSWORD_DEFAULT); // Update password
+                    $user_found = true;
                     $_SESSION['login_message'] = "Lösenordet har ändrats!";
-                    $user_found = true;
-                    break;
-                }
-                else
-                {
-                    $_SESSION['login_message'] = "Nuvarande lösenord är felaktigt.";
-                    $user_found = true;
                     break;
                 }
             }
         }
-
-        if (!$user_found)
-        {
-            $_SESSION['login_message'] = "Användaren hittades inte!";
+        if ($user_found) {
+            header("Location: projlogin.php");
+            exit();
+        } else {
+            $_SESSION['login_message'] = "Felaktigt nuvarande lösenord.";
         }
     } 
     // Inloggning
@@ -59,64 +55,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         if (empty($_POST['username']) || empty($_POST['password']))
         {
             $_SESSION['login_message'] = "Vänligen fyll i både användarnamn och lösenord.";
+            header("Location: projlogin.php"); // Redirect to prevent further execution
+            exit();
+        }
+        $username = test_input($_POST['username']);
+        $password = test_input($_POST['password']);
+
+        $user_found = false;
+        // Loop genom användare för att hitta matchande inloggningsuppgifter
+        foreach ($_SESSION['users'] as $user)
+        {
+            if ($user['username'] === $username && password_verify($password, $user['password']))
+            {
+                $user_found = true;
+                $_SESSION['username'] = $username;
+                $_SESSION['login_success'] = true;
+                break;
+            }
+        }
+
+        if ($user_found)
+        {
+            $_SESSION['login_message'] = "Välkommen, $username!";
+            $_SESSION['bio'] = "$username's profil";
+
+            // Sätt en cookie för första besöket om den inte redan är satt
+            if (!isset($_COOKIE['first_visit']))
+            {
+                setcookie('first_visit', time(), time() + (86400 * 30), "/");
+                $_SESSION['first_visit_time'] = date("d-m-Y H:i:s");
+                $_SESSION['login_message'] = "<br> Hej $username, <br> ditt konto har skapats. Ditt lösenord är: $password.<br> Vänligen ändra ditt lösenord efter inloggning.";
+            }
+            else
+            {
+                $firstVisitTime = isset($_SESSION['first_visit_time']) ? $_SESSION['first_visit_time'] : date("d-m-Y H:i:s", $_COOKIE['first_visit']);
+                $_SESSION['login_message'] = "<br>Välkommen tillbaka, $username!<br> Ditt senaste besök var: $firstVisitTime";
+            }
+
+            if ($username == "eerolaha@arcada")
+            {
+                $_SESSION['login_message'] = "<br> Välkommen master Hannes.";
+            }
         } 
         else
         {
-            $username = test_input($_POST['username']);
-            $password = test_input($_POST['password']);
-
-            $user_found = false;
-            // Loop genom användare för att hitta matchande inloggningsuppgifter
-            foreach ($_SESSION['users'] as $user)
-            {
-                if ($user['username'] === $username && password_verify($password, $user['password']))
-                {
-                    $user_found = true;
-                    $_SESSION['username'] = $username;
-                    $_SESSION['login_success'] = true;
-                    break;
-                }
-            }
-
-            if ($user_found)
-            {
-                $_SESSION['login_message'] = "Välkommen, $username!";
-                $_SESSION['bio'] = "$username's profil";
-
-                // Sätt en cookie för första besöket om den inte redan är satt
-                if (!isset($_COOKIE['first_visit']))
-                {
-                    setcookie('first_visit', time(), time() + (86400 * 30), "/");
-                    $_SESSION['first_visit_time'] = date("d-m-Y H:i:s");
-                    $_SESSION['login_message'] = "<br> Hej $username, <br> ditt konto har skapats. Ditt lösenord är: $password.<br> Vänligen ändra ditt lösenord efter inloggning.";
-                }
-                else
-                {
-                    $firstVisitTime = isset($_SESSION['first_visit_time']) ? $_SESSION['first_visit_time'] : date("d-m-Y H:i:s", $_COOKIE['first_visit']);
-                    $_SESSION['login_message'] = "<br>Välkommen tillbaka, $username!<br> Ditt senaste besök var: $firstVisitTime";
-                }
-
-                if ($username == "eerolaha@arcada")
-                {
-                    $_SESSION['login_message'] = "<br> Välkommen master Hannes. Omdirigerar till profilen";
-                    header("Refresh: 3; url=projprofile.php"); // Omdirigera till profilen efter 3 sekunder
-                    exit();
-                }
-                
-                // Omdirigera till samma inloggningssida
-                header("Location: projlogin.php");
-                exit();
-            } 
-            else
-            {
-                $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt."; // Felmeddelande vid felaktigt användarnamn eller lösenord
-            }
-        }   
-    }
-}    
+            $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt."; // Felmeddelande vid felaktigt användarnamn eller lösenord
+        }
+    }   
+}
+   
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -179,4 +169,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         </section>
     </div>
 </body>
-</html>
+</html

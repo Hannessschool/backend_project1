@@ -1,5 +1,4 @@
 <?php
-
 // Asetetaan aikavyöhyke Helsinkiin
 // Ställ in tidszon till Helsingfors
 date_default_timezone_set('Europe/Helsinki');

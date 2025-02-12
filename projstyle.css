@@ -23,14 +23,23 @@ header{
     padding: 20px;
 }
 
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
 .uploaded-image-container {
     margin-top: 20px; /* Space above the image */
     text-align: center; /* Center the image */
 }
 
 .uploaded-image-container img {
-    max-width: 100px; /* Make the image responsive */
-    max-height: 100px; /* Maintain the aspect ratio */
+    max-width: 200px; /* Make the image responsive */
+    max-height: 200px; /* Maintain the aspect ratio */;
 }
 
 h1{
@@ -92,9 +101,24 @@ textarea {
 
 .subtle-username {
     display: block; /* Ensures it occupies its own line */
-    font-size: 25px; /* Smaller font size for reduced prominence */
-    color: #333131; /* Dark gray color for subtle visibility */
+    font-size: 25px; 
+    color: #333131; 
     margin-top: 10px; /* Slight spacing from surrounding elements */
-    text-align: right; /* Text to the right*/
-    margin-right: 5px;
+    text-align: center; /* Text in center*/
+}
+
+.error-container {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    display: block; /* Ensures the container is block-level */
+    clear: both;    /* Prevents overflow or unwanted float behavior */
+}
+
+.error-message {
+    margin: 5px 0;
+    font-size: 14px;
 }

@@ -1,5 +1,5 @@
 <?php
-session_start(); // Starta sessionen
+; // Starta sessionen
 
 if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
 {
@@ -58,6 +58,5 @@ else
 {
     $_SESSION['upload_message'] = "Ingen fil uppladdades eller skickades."; // Meddelande om ingen fil uppladdades eller skickades
 }
-
 ?>
 
