@@ -1,106 +1,113 @@
-<?php 
-include "projhandy_methods.php";
+<?php
+include "projhandy_methods.php"; // Inkludera hjälpfunktioner
+include "projupload.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Kontrollera om användarnamn är satt i sessionen
-if(!isset($_SESSION['username']))
-{
-    // Om användarnamn inte är satt, omdirigera till inloggningssidan
-    header("Location: projlogin.php");
-    exit();
+
+if (isset($_POST['save_desc'])) {
+    $profile_desc = htmlspecialchars($_POST['profile_desc']);
+    // Save the profile description to a file Spara profilbeskrivningen till en fil
+    if (file_put_contents('profile_desc.txt', $profile_desc) === false) {
+    } else {
+        $_SESSION['profile_desc_updated'] = true;
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
 }
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profilsida</title>
+    <title>Save The Dayte</title>
     <link rel="stylesheet" href="./projstyle.css">
 </head>
 <body>
-    <div id="container">    <!-- Maxbredd 800px -->
+    <div id="container">    <!-- Max bredd 800px -->
         <?php include "projheader.php"; ?>
         <section>
-            <h1>Profilinfo</h1>
-            Din profil:
+            <h1>Din profil</h1>
+            Profilinfo:
             <?php
-            // Visa användarens bio om den är satt
-            if(isset($_SESSION['bio']))
-            {
-                print(htmlspecialchars(($_SESSION['bio'])));
+            if (isset($_SESSION['username'])) {
+                print("<span class='subtle-username'>". htmlspecialchars($_SESSION['username']) . "</span>");
             }
-            else
-            {
-                print("Ingen bio tillgänglig ännu");
+            ?>     
+            <!-- Visa uppladdade bilder -->
+            <form action="" method="post">
+            <?php display_all_uploaded_images("pictures/" . $_SESSION['username'] . "/"); ?>
+            </form>
+            <?php
+            if (isset($_SESSION['profile_pic'])) {
+                $profile_pic = "pictures/" . $_SESSION['username'] . "/" . $_SESSION['profile_pic'];
+                print("<h2>Din Profilbild</h2>");
+                print("<img src='$profile_pic' alt='Profile Picture' style='width: 200px; height: auto;'>");
             }
             ?>
-            <article>
-<<<<<<< HEAD
-                <h1>Redigera profil</h1>
-=======
+
+            <!-- Profilbeskrivningsruta som visar den -->
+            <div class='profile-description-container'>
+                <h2>Profilbeskrivning</h2>
+                <?php
+                if (file_exists("profile_desc.txt")) {
+                    $profile_desc = htmlspecialchars(file_get_contents("profile_desc.txt"));
+                    print("<p>" . $profile_desc . "</p>");
+                } else {
+                    print("<p>Ingen profilbeskrivning tillgängling ännu.</p>");
+                }
+                ?>
+            </div>
             <h1>Redigera profil</h1>
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-                <h2>Ladda upp fil</h2>
-                <form action="" method="post" enctype="multipart/form-data">
-                    <label for="fileToUpload">Välj bild att ladda upp:</label>
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                    <input type="submit" value="Bekräfta uppladdning" name="submit">
-                </form>
-                <h2>Kommentarsfält</h2>
-                <form action="" method="post">
-                    <label for="comment">Lämna en kommentar:</label>
-                    <textarea name="comment" id="comment" rows="3" required></textarea>
-                    <input type="submit" value="Skicka kommentar" name="submit_comment">
-                </form>
-                <?php include "projcommentfield.php";?>
-            </article>
-            <article>
+            <h2>Ladda upp fil</h2>
+            <form action="" method="post" enctype="multipart/form-data">
+                <label for="fileToUpload">Välj bild att ladda upp:</label>
+                <input type="file" name="fileToUpload" id="fileToUpload">
+                <input type="submit" value="Bekräfta uppladdning" name="submit">
+            </form>
             <h2>Profilbeskrivning</h2>
-            <form action="" method="post">
-                <textarea name="profile_desc" rows="4" cols="50" required><?php
-<<<<<<< HEAD
-                    // Visa profilbeskrivningen om filen finns
-=======
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-                    if (file_exists("profile_desc.txt")) {
-                        print(htmlspecialchars(file_get_contents("profile_desc.txt")));
-                    }
-                ?></textarea>
+            <form action="" method="post" onsubmit="clearTextarea()">
+                <textarea name="profile_desc" rows="4" cols="50" required></textarea>
                 <br>
+                <input type="hidden" name="form_submitted" value="1">
                 <input type="submit" value="Spara" name="save_desc">
             </form>
-
             <?php
-<<<<<<< HEAD
-            // Spara den nya profilbeskrivningen om formuläret skickas
-            if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
-                $desc = trim($_POST['profile_desc']); // Tar bort extra space
-                $safeDesc = htmlspecialchars($desc); // Förebygger HTML tags
-=======
-            if (isset($_POST['save_desc']) && isset($_POST['profile_desc'])) {
-                $desc = trim($_POST['profile_desc']); // tar bort extra space
-                $safeDesc = htmlspecialchars($desc); // Hindrar för många HTML tags
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-                file_put_contents("profile_desc.txt", $safeDesc);
+            if (isset($_SESSION['profile_desc_updated'])) {
                 print("<p>Profilbeskrivning uppdaterad!</p>");
+                unset($_SESSION['profile_desc_updated']);
             }
             ?>
-        </article>
-            <article>
-                <h2>Besöksdata</h2>
-                <?php include "projsitedata.php";?>
-            </article>
-            <article>
-                <h2>Dejt timer</h2>
-                <form action="projprofile.php" method="get">
-                    <label for="event_date">Tillägg datum för dejten (DD/MM/YYYY):</label>
-                    <input type="text" id="event_date" name="event_date" placeholder="DD/MM/YYYY" required>
-                    <input type="submit" value="Bekräfta">
-                </form>
-                <?php include "projtimestamp.php"; ?>
-            </article>     
-    </section>
-</form>
+            <h2>Kommentarsfält</h2>
+            <form action="" method="post">
+                <label for="comment">Lämna en kommentar:</label>
+                <textarea name="comment" id="comment" rows="3" required></textarea>
+                <input type="submit" value="Skicka kommentar" name="submit_comment">
+            </form>
+            <?php include "projcommentfield.php";?> <!-- Inkludera kommentarsfält -->
+            <h1>Dejt timer</h1>
+            <form action="projprofile.php" method="get">
+                <label for="event_date">Tillägg datum för dejten (DD/MM/YYYY):</label>
+                <input type="text" id="event_date" name="event_date" placeholder="DD/MM/YYYY" required>
+                <input type="submit" value="Bekräfta">
+            </form>
+            <?php include "projtimestamp.php"; ?> <!-- Inkludera tidsstämpel -->
+        </section>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('.selectable-image');
+            images.forEach(image => {
+                image.addEventListener('click', function() {
+                    this.closest('form').submit();
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+
+

@@ -1,3 +1,8 @@
+#logo img {
+    max-width: 100px; /* Make the image responsive */
+    max-height: 100px; /* Maintain the aspect ratio */
+}
+
 html{
     margin:0;
 }
@@ -12,23 +17,113 @@ body{
     background-color:white;
     max-width:800px;
     margin: auto;
-    min-height:1000px; 
+    min-height:1200px; 
     color:black;
 }
 
 header{
     background-color: palevioletred;
     color: black;
+    text-align: right;
+    padding: 20px;
+}
+
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.uploaded-image-container {
+    margin-top: 20px; /* Space above the image */
+    text-align: center; /* Center the image */
+}
+
+.uploaded-image-container img {
+    max-width: 200px; /* Make the image responsive */
+    max-height: 200px; /* Maintain the aspect ratio */;
 }
 
 h1{
-    font-size: 15;
+    font-size: 18;
 }
 
 h2{
-    font-size: 11;
-<<<<<<< HEAD
+    font-size: 14;
 }
-=======
+
+h3{
+    font-size:18;
+    padding-left: 10px;
+    padding-right: 10px;
 }
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
+
+p{
+    font-size: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+article {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+nav ul {
+    list-style-type: none;
+}
+
+.profile-description-container {
+    background-color: #f4f4f4; /* Light gray background */
+    padding: 20px; /* Some padding around the description */
+    border-radius: 10px; /* Round the corners for a smoother look */
+    margin-top: 20px; /* Space from the top (for better visual separation) */
+    color: black; /* Black text */
+}
+
+.profile-description-container h2 {
+    font-size: 16px; /* Larger font size for the description title */
+    color: #333; /* Darker color for the title */
+}
+
+.profile-description-container p {
+    font-size: 14px; /* Slightly larger text for the description */
+    line-height: 1.5; /* Better spacing between lines */
+}
+
+textarea {
+    padding: 2px; /* Adds some padding around the text inside the textarea */
+    text-align: left; /* Ensures the text is aligned to the left */
+    vertical-align: top; /* Ensures the text starts from the top */
+    resize: vertical; /* Optional: Allow the user to resize the textarea vertically */
+}
+
+.subtle-username {
+    display: block; /* Ensures it occupies its own line */
+    font-size: 25px; 
+    color: #333131; 
+    margin-top: 10px; /* Slight spacing from surrounding elements */
+    text-align: center; /* Text in center*/
+}
+
+.error-container {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    display: block; /* Ensures the container is block-level */
+    clear: both;    /* Prevents overflow or unwanted float behavior */
+}
+
+.error-message {
+    margin: 5px 0;
+    font-size: 14px;
+}

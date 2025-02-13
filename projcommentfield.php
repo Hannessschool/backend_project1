@@ -1,15 +1,15 @@
 <?php
-$commentFile = "comments.txt";
+$commentFile = "comments.txt"; // Fil för att lagra kommentarer
 
-// Kontrollera om kommentarsformuläret har skickats och kommentaren inte är tom
+// Kontrollera om kommentarsformuläret har skickats och om kommentaren inte är tom
 if (isset($_POST['submit_comment']) && !empty($_POST['comment'])) {
     // Kontrollera om användaren är inloggad
     if (!isset($_SESSION['username'])) {
-        print("Du måste vara inloggad för att kommentera.");
+        print("Du måste vara inloggad för att kommentera."); // Meddelande om användaren inte är inloggad
     } else {
-        $username = $_SESSION['username'];
-        $timestamp = date("d-m-Y H:i:s");
-        $comment = trim($_POST['comment']);
+        $username = $_SESSION['username']; // Hämta användarnamnet från sessionen
+        $timestamp = date("d-m-Y H:i:s"); // Hämta aktuell tid och datum
+        $comment = trim($_POST['comment']); // Rensa kommentaren från onödiga mellanslag
 
         // Rensa bort farliga tecken
         $safeComment = htmlspecialchars($comment);
@@ -17,7 +17,7 @@ if (isset($_POST['submit_comment']) && !empty($_POST['comment'])) {
         // Skapa kommentarsinlägget
         $newEntry = "$username | $timestamp | $safeComment" . PHP_EOL;
 
-        // Lägg till kommentaren i början för att säkerställa att de nyaste kommentarerna visas först
+        // Lägg till kommentaren överst i filen för att visa de senaste kommentarerna först
         if (file_exists($commentFile)) {
             $oldContent = file_get_contents($commentFile);
             file_put_contents($commentFile, $newEntry . $oldContent);
@@ -25,7 +25,7 @@ if (isset($_POST['submit_comment']) && !empty($_POST['comment'])) {
             file_put_contents($commentFile, $newEntry);
         }
 
-        print("Din kommentar har sparats!");
+        print("Din kommentar har sparats!"); // Meddelande om kommentaren har sparats
     }
 }
 
@@ -40,7 +40,7 @@ if (file_exists($commentFile)) {
     }
     print("</ul>");
 } else {
-    print("<p>Inga kommentarer än.</p>");
+    print("<p>Inga kommentarer än.</p>"); // Meddelande om inga kommentarer finns
 }
 ?>
 

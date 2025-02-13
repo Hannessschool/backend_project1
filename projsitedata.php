@@ -1,89 +1,76 @@
 <?php
+// Asetetaan aikavyöhyke Helsinkiin
+// Ställ in tidszon till Helsingfors
+date_default_timezone_set('Europe/Helsinki');
+
+// Tiedostot kävijälaskurin ja vierailijoiden lokin tallentamiseen
+// Spara besöksräknaren och besökares logg
 $userCounterFile = 'VisitorCounter.txt';
+$visitorLogFile = 'VisitorLog.txt'; 
 
 function visitLog($username = null)
 {
-    global $userCounterFile;
+    global $userCounterFile, $visitorLogFile;
 
-    $currentCount = 0;
-    $logEntries = [];
+    // Haetaan käyttäjän IP-osoite ja nykyinen aikaleima
+    // Hämta användarens IP-adress och aktuell tid
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'Okänd';
+    $timestamp = date("d-m-Y H:i:s");
 
-<<<<<<< HEAD
-    // Kontrollera om filen finns
-=======
-    // Check if the file exists
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-    if (file_exists($userCounterFile)) {
-        $lines = file($userCounterFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    // Luetaan aikaisemmat vierailijat lokitiedostosta
+    // Läs tidigare besökare
+    $existingVisitors = [];
+    if (file_exists($visitorLogFile)) {
+        $lines = file($visitorLogFile, FILE_IGNORE_NEW_LINES);
+        foreach ($lines as $line) {
+            list($ip, $time) = explode('|', $line);
+            $existingVisitors[$ip] = $time;
+        }
+    }
+
+    // Jos kävijälaskurin tiedostoa ei ole, luodaan se ja asetetaan laskuri 0:ksi
+    // Skapa besöksräknarfil om den saknas
+    if (!file_exists($userCounterFile)) {
+        file_put_contents($userCounterFile, "0\n");
+    }
+    $lines = file($userCounterFile, FILE_IGNORE_NEW_LINES);
+    $currentCount = isset($lines[0]) && is_numeric($lines[0]) ? (int)$lines[0] : 0;
+
+    // Jos käyttäjää ei ole vielä rekisteröity, lisätään uusi kävijä
+    // Registrera ny besökare
+    if (!isset($existingVisitors[$userIP])) {
+        $currentCount++;
+        $existingVisitors[$userIP] = $timestamp;
         
-        if (!empty($lines[0]) && is_numeric($lines[0])) {
-<<<<<<< HEAD
-            $currentCount = (int)$lines[0]; // Första raden är räknaren
-            $logEntries = array_slice($lines, 1); // Resten är loggposter
+        // Päivitetään lokitiedosto uusilla kävijöillä
+        // Uppdatera loggfilen
+        $visitorLogContent = "";
+        foreach ($existingVisitors as $ip => $time) {
+            $visitorLogContent .= "$ip|$time\n";
         }
+        file_put_contents($visitorLogFile, $visitorLogContent);
+
+        // Päivitetään kävijälaskurin tiedosto tallentamalla kaikki aikaisemmat kävijät
+        // Uppdatera besöksräknarens fil med alla tidigare poster
+        $fileContent = "$currentCount\n";
+        foreach ($existingVisitors as $ip => $time) {
+            $fileContent .= "$ip besökte vid: $time\n";
+        }
+        file_put_contents($userCounterFile, $fileContent);
     }
 
-    // Öka besöksräknaren
-    $currentCount++;
-
-    // Hämta tidsstämpeln
-    $timestamp = date("d-m-Y H:i:s");
-
-    // Om användarnamnet är tomt, använd IP-adressen
-    if (empty($username)) {
-        $username = $_SERVER['REMOTE_ADDR']; // Hämtar användarens IP-adress
-    }
-
-    // Lägg till ny loggpost
-    $logEntry = "$username besökte vid tid: $timestamp";
-    array_unshift($logEntries, $logEntry); // Lägg till i början
-
-    // Förbered filinnehållet
-    $fileContent = $currentCount . PHP_EOL . implode(PHP_EOL, $logEntries) . PHP_EOL;
-
-    // Spara tillbaka till filen
-    file_put_contents($userCounterFile, $fileContent);
-
-    // Visa besöksräknaren
-    print("Du är vår besökare nummer $currentCount ");
+    // Näytetään uniikkien kävijöiden määrä
+    // Visa antal unika besökare
+    print("Du är besökare nummer $currentCount.");
+    print("<br> Serverns ip:".$_SERVER['SERVER_ADDR'].".");
+    print("<br> Skriptet som körs:".$_SERVER['PHP_SELF'].".");
+    print("<br> Tidszon: " . date_default_timezone_get().".");
+#phpinfo(););
 }
 
-// Exempel på användning:
-visitLog(isset($_SESSION['username']) ? $_SESSION['username'] : null);
+// Suoritetaan funktio
+// Kör funktionen
+visitLog();
+
 ?>
 
-=======
-            $currentCount = (int)$lines[0]; // First line is the counter
-            $logEntries = array_slice($lines, 1); // The rest are log entries
-        }
-    }
-
-    // Increase visit count
-    $currentCount++;
-
-    // Get the timestamp
-    $timestamp = date("d-m-Y H:i:s");
-
-    // If username is empty, use IP address
-    if (empty($username)) {
-        $username = $_SERVER['REMOTE_ADDR']; // Gets user's IP address
-    }
-
-    // Add new log entry
-    $logEntry = "$username besökte vid tid: $timestamp";
-    array_unshift($logEntries, $logEntry); // Add to the start
-
-    // Prepare the file content
-    $fileContent = $currentCount . PHP_EOL . implode(PHP_EOL, $logEntries) . PHP_EOL;
-
-    // Save back to the file
-    file_put_contents($userCounterFile, $fileContent);
-
-    // Display the visitor count
-    print("Du är vår besökare nummer $currentCount ");
-}
-
-// Example usage:
-visitLog(isset($_SESSION['username']) ? $_SESSION['username'] : null);
-?>
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c

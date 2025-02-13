@@ -1,126 +1,111 @@
 <?php
-include_once "projhandy_methods.php";
-include_once "projpasswordhandling.php";
+include_once "projhandy_methods.php"; // Inkludera hjälpfunktioner
+include_once "projpasswordhandling.php"; // Inkludera lösenordshantering
 
-// Kontrollera om användarsessionen är satt
+$register_message = isset($_SESSION['register_message']) ? $_SESSION['register_message'] : ''; // Hämta registreringsmeddelande från sessionen
+unset($_SESSION['register_message']); // Ta bort registreringsmeddelandet från sessionen
+
+// Kontrollera om användarlistan är satt i sessionen
 if (!isset($_SESSION['users'])) {
-    // Om ingen användare hittas, skapa en lista med användare och deras hashade lösenord
+    // Om inte, skapa en standardlista med användare
     $_SESSION['users'] = [
         ['username' => 'user1', 'password' => password_hash('password123', PASSWORD_DEFAULT)],
         ['username' => 'user2', 'password' => password_hash('password456', PASSWORD_DEFAULT)],
-        ['username' => 'hhaanneess@outlook.com', 'password' => password_hash('Hantuchov96!?', PASSWORD_DEFAULT)], // Exempel på hashat lösenord
+        ['username' => 'hhaanneess@outlook.com', 'password' => password_hash('HHaanneess', PASSWORD_DEFAULT)], // Exempel på hashat lösenord
     ];
 }
 
 // Hantera POST-förfrågan för inloggning och lösenordsbyte
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-    // Åtgärd för lösenordsbyte
+    // Lösenordsbyte
     if (isset($_POST['action']) && $_POST['action'] === 'new_password')
     {
         $currentPassword = $_POST['current_password'];
         $newPassword = $_POST['new_password'];
 
+        $username = $_SESSION['username']; // Ensure $username is set
         $user_found = false;
-        // Loop genom användarna för att hitta den aktuella användaren
+        // Loopa genom användare för att hitta den aktuella användaren
         foreach ($_SESSION['users'] as &$user)
         {
-            if ($user['username'] === $_SESSION['username'])
+            if ($user['username'] === $username && password_verify($currentPassword, $user['password']))
             {
                 // Verifiera nuvarande lösenord
                 if (password_verify($currentPassword, $user['password']))
                 {
-                    // Hasha det nya lösenordet och uppdatera
-                    $user['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $user['password'] = password_hash($newPassword, PASSWORD_DEFAULT); // Update password
+                    $user_found = true;
                     $_SESSION['login_message'] = "Lösenordet har ändrats!";
-                    $user_found = true;
-                    break;
-                }
-                else
-                {
-                    $_SESSION['login_message'] = "Nuvarande lösenord är felaktigt.";
-                    $user_found = true;
                     break;
                 }
             }
         }
-
-        if (!$user_found)
-        {
-            $_SESSION['login_message'] = "Användare hittades inte!";
+        if ($user_found) {
+            header("Location: projlogin.php");
+            exit();
+        } else {
+            $_SESSION['login_message'] = "Felaktigt nuvarande lösenord.";
         }
     } 
-    // Åtgärd för inloggning
+    // Inloggning
     else
     {
         if (empty($_POST['username']) || empty($_POST['password']))
         {
             $_SESSION['login_message'] = "Vänligen fyll i både användarnamn och lösenord.";
+            header("Location: projlogin.php"); // Redirect to prevent further execution
+            exit();
+        }
+        $username = test_input($_POST['username']);
+        $password = test_input($_POST['password']);
+
+        $user_found = false;
+        // Loop genom användare för att hitta matchande inloggningsuppgifter
+        foreach ($_SESSION['users'] as $user)
+        {
+            if ($user['username'] === $username && password_verify($password, $user['password']))
+            {
+                $user_found = true;
+                $_SESSION['username'] = $username;
+                $_SESSION['login_success'] = true;
+                break;
+            }
+        }
+
+        if ($user_found)
+        {
+            $_SESSION['login_message'] = "Välkommen, $username!";
+            $_SESSION['bio'] = "$username's profil";
+
+            // Sätt en cookie för första besöket om den inte redan är satt
+            if (!isset($_COOKIE['first_visit']))
+            {
+                setcookie('first_visit', time(), time() + (86400 * 30), "/");
+                $_SESSION['first_visit_time'] = date("d-m-Y H:i:s");
+                $_SESSION['login_message'] = "<br> Hej $username, <br> ditt konto har skapats. Ditt lösenord är: $password.<br> Vänligen ändra ditt lösenord efter inloggning.";
+            }
+            else
+            {
+                $firstVisitTime = isset($_SESSION['first_visit_time']) ? $_SESSION['first_visit_time'] : date("d-m-Y H:i:s", $_COOKIE['first_visit']);
+                $_SESSION['login_message'] = "<br>Välkommen tillbaka, $username!<br> Ditt senaste besök var: $firstVisitTime";
+            }
+
+            if ($username == "eerolaha@arcada")
+            {
+                $_SESSION['login_message'] = "<br> Välkommen master Hannes.";
+            }
         } 
         else
         {
-            $username = test_input($_POST['username']);
-            $password = test_input($_POST['password']);
-
-            $user_found = false;
-            // Loop genom användarna för att hitta matchande inloggningsuppgifter
-            foreach ($_SESSION['users'] as $user)
-            {
-                if ($user['username'] === $username && password_verify($password, $user['password']))
-                {
-                    $user_found = true;
-                    $_SESSION['username'] = $username;
-                    $_SESSION['login_success'] = true;
-                    break;
-                }
-            }
-
-            if ($user_found)
-            {
-                $_SESSION['login_message'] = "Välkommen, $username!";
-                $_SESSION['bio'] = "$username's profil";
-
-                // Sätt en cookie för första besöket om den inte redan är satt
-                if (!isset($_COOKIE['first_visit']))
-                {
-                    setcookie('first_visit', time(), time() + (86400 * 30), "/");
-                    $_SESSION['first_visit_time'] = date("d-m-Y H:i:s");
-                    $_SESSION['login_message'] = "Hej $username,\n\nDitt konto har skapats. Ditt lösenord är: $password\n\nVänligen ändra ditt lösenord efter inloggning.";
-                }
-                else
-                {
-                    $firstVisitTime = isset($_SESSION['first_visit_time']) ? $_SESSION['first_visit_time'] : date("d-m-Y H:i:s", $_COOKIE['first_visit']);
-                    $_SESSION['login_message'] = "Välkommen tillbaka, $username! Ditt senaste besök var: $firstVisitTime";
-                }
-
-                // Specialfall för masteranvändare
-                if ($username == "eerolaha@arcada")
-                {
-                    $_SESSION['login_message'] = "Välkommen master Hannes. Omdirigerar till profilen";
-                    header("Refresh: 3; url=projprofile.php");
-                    exit();
-                }
-
-                // Redirect to the same login page
-                header("Location: projlogin.php");
-                exit();
-            } 
-            else
-            {
-<<<<<<< HEAD
-                // Om användarnamn eller lösenord är felaktigt, skriv ut ett felmeddelande
-                $_SESSION['login_message'] = "Felaktigt användarnamn eller lösenord. Försök igen.";
-=======
-                $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt.";
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-            }
+            $_SESSION['login_message'] = "Inkorrekt användarnamn eller lösenord. Vänligen försök på nytt."; // Felmeddelande vid felaktigt användarnamn eller lösenord
         }
-    }
+    }   
 }
+   
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -139,25 +124,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     </script>
 </head>
 <body>
-    <div id="container">    <!-- Maxbredd 800px -->
+    <div id="container">    <!-- Max bredd 800px -->
     <?php include "projheader.php"; ?>
         <section> 
             <article>
-            <h2>Inloggning</h2>
             <?php 
-            if(isset($_SESSION['login_success']))
+            // Kontrollera om inloggningen lyckades
+            if(isset($_SESSION['login_success']) && $_SESSION['login_success'] === true)
             {
-                unset($_SESSION['login_success']);
+                print('<h1>Ändra lösenordet</h1>');
+                print('<button onclick="toggleChangePasswordForm()">Ändra lösenord</button>');
+                print('<form id="changePasswordForm" action="projlogin.php" method="POST" autocomplete="off" style="display:none;">
+                    <input type="hidden" name="action" value="new_password">
+                    Nuvarande lösenordet: <input type="password" name="current_password" required autocomplete="off">
+                    Nya lösenordet: <input type="password" name="new_password" required autocomplete="off">
+                    <input type="submit" value="Change password">
+                    </form>');
+                
+                print('<h1>Gå till profil, ' . htmlspecialchars($_SESSION['username']) . '</h1>');
+                print('<li><a href="projprofile.php">Profil</a></li>');
+                print('<h1>Besöksdata</h1>');
+                include "projsitedata.php"; // Inkludera besöksdata
+
             }
             else
             {
+                print('<h1>Logga in</h1>');
                 print('<form action="projlogin.php" method="POST" autocomplete="off">
-                Användarnamn: <input type= "text" name= "username" required autocomplete="off">
-                Lösenord: <input type= "password" name= "password" required autocomplete="off">
-                <input type="submit" value="Logga in">
+                Användarnamn: <input type="text" name="username" required autocomplete="off">
+                Lösenord: <input type="password" name="password" required autocomplete="off">
+                <input type="submit" value="Login">
                 </form>');
             }
 
+            // Visa inloggningsmeddelande om det finns
             if(isset($_SESSION['login_message']))
             {
                 print($_SESSION['login_message']);
@@ -165,42 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
             }
             ?>
             </article>
-                <h1>Ändra lösenordet</h1>
-                <button onclick="toggleChangePasswordForm()">Ändra lösenord</button>
-                <form id="changePasswordForm" action="projlogin.php" method="POST" autocomplete="off" style="display:none;">
-                    <input type="hidden" name="action" value="new_password">
-<<<<<<< HEAD
-                    Nuvarande lösenord: <input type= "password" name="current_password" required autocomplete="off">
-                    Nytt lösenord: <input type= "password" name="new_password" required autocomplete="off">
-                    <input type="submit" value="Byt lösenord">
-                </form>
-                <?php
-                if (isset($_POST['username']))
-                {
-                    print("Nuvarande användarnamn: " . htmlspecialchars($_POST['username']) . "<br>");
-                }
-                if (isset($_POST['password']))
-                {
-                    print("Nuvarande lösenord: " . htmlspecialchars($_POST['password']) . "<br>");
-                }
-=======
-                    Nuvarande lösenordet: <input type= "password" name="current_password" required autocomplete="off">
-                    Nya lösenordet: <input type= "password" name="new_password" required autocomplete="off">
-                    <input type="submit" value="Change password">
-                </form>
-                <?php
->>>>>>> 6886e0be191e393af645a2ff34fac12121e5b44c
-                ?>
-                <article>
-                <h1>Gå till profil</h1>
-                <li><a href="projprofile.php">Profil</a></li>
-                </article>
-                <article>
-                <h1>Besöksdata</h1>
-                <?php include "projsitedata.php";?>
-                </article>
-
         </section>
     </div>
 </body>
-</html>
+</html
