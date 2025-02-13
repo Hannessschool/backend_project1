@@ -1,10 +1,10 @@
 <header>  <!-- Max width 800px -->
-    <div id="logo">Save The Dayte</div>  <!-- Logo till vänster, nav till höger -->
+<div id="logo"><img src="logo.png" alt="Save The Dayte Logo"></div>  <!-- Logo till vänster, nav till höger -->
     <nav>
         <ul>
             <li>Reklam</li>  <!-- Menyalternativ för reklam -->
             <li>Om</li>  <!-- Menyalternativ för om-sidan -->
-            <li><a href='registration.php'>Registrera mig</a></li>  <!-- Länk till registreringssidan -->
+            <li><a href='projregister.php'>Registrera mig</a></li>  <!-- Länk till registreringssidan -->
             <?php
             // Kontrollera om användaren är inloggad
             if (isset($_SESSION['username']))

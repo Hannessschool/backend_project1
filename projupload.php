@@ -1,62 +1,100 @@
 <?php
 ; // Starta sessionen
 
-if(isset($_POST["submit"]) && isset($_FILES["fileToUpload"]))
-{
-    $target_dir = "pictures/"; // Målmapp för uppladdade filer
-    $target_file = $target_dir.basename($_FILES["fileToUpload"]["name"]); // Fullständig sökväg till målfilen
-    $uploadOk = 1; // Variabel för att kontrollera om uppladdningen är OK
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION)); // Filtyp
+$username = $_SESSION['username'];
+$target_dir = "pictures/" . $username . "/";
 
-    // Kontrollera om bildfilen är en faktisk bild eller en falsk bild
-    $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-    if($check !== false)
-    {
-        print("Filen är ett foto - " . $check["mime"] . ".");
-        $uploadOk = 1; // Uppladdningen är OK
-    }
-    else
-    {
-        print("Filen är inte ett foto.");
-        $uploadOk = 0; // Uppladdningen är inte OK
-    }
+// Skapa mappen om den inte finns
+if (!file_exists($target_dir)) {
+    mkdir($target_dir, 0777, true);
+}
 
-    // Kontrollera om filen redan existerar
-    if (file_exists($target_file)) 
-    {
-        print("OBS! Denna filen existerar redan.");
-        $uploadOk = 0; // Uppladdningen är inte OK
+if (isset($_POST["submit"]) && isset($_FILES["fileToUpload"])) {
+    $errorMessages = [];
+    $file_name = basename($_FILES["fileToUpload"]["name"]);
+    $target_file = $target_dir . $file_name;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    $uploadOk = 1;
+
+    // Kontrollera om filen är en giltig bild
+    if (!in_array($imageFileType, ['jpg', 'png'])) {
+        $errorMessages[] = "Endast JPG och PNG är tillåtna.";
+        $uploadOk = 0;
     }
 
-    // Kontrollera filstorleken (500 000 B, eller 500 kB)
-    if ($_FILES["fileToUpload"]["size"] > 500000)
-    {
-        print("OBS! Din fil är för stor.");
-        $uploadOk = 0; // Uppladdningen är inte OK
+    // Kontrollera filstorlek (max 500 KB)
+    if ($_FILES["fileToUpload"]["size"] > 500000) {
+        $errorMessages[] = "Filen är för stor.";
+        $uploadOk = 0;
     }
 
-    // Tillåt endast vissa filtyper
-    if(!in_array($imageFileType, ['jpg','png']))
-    {
-        print("OBS! Endast JPG- & PNG- är tillåtna.");
-        $uploadOk = 0; // Uppladdningen är inte OK
-    }
-
-    // Kontrollera om uppladdningen är OK
-    if($uploadOk == 1)
-    if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
-    {
-        $_SESSION['upload_message'] = "Filen ".basename($_FILES["fileToUpload"]["name"]). " har laddats upp."; // Meddelande om uppladdningen lyckades
-        $_SESSION['uploaded_image'] = basename($_FILES["fileToUpload"]["name"]);
-    }
-    else
-    {
-        $_SESSION['upload_message'] = "OBS! Det uppstod ett fel under uppladdningen av din fil."; // Meddelande om fel vid uppladdningen
+    // Ladda upp filen om allt är OK
+    if ($uploadOk == 1) {
+        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+            $errorMessages[] = "Filen " . htmlspecialchars($file_name) . " har laddats upp.";
+        } else {
+            $errorMessages[] = "Det uppstod ett fel vid uppladdningen.";
+        }
     }
 }
-else
+
+if (isset($_POST['save_desc'])) {
+    $profile_desc = htmlspecialchars($_POST['profile_desc']);
+    // Save the profile description to a file
+    file_put_contents('profile_desc.txt', $profile_desc);
+    $_SESSION['profile_desc_updated'] = true;
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+if (isset($_POST['profile_pic'])) {
+    $selected_image = $_POST['profile_pic'];
+    if ($selected_image) {
+        // Save the selected image as profile picture in session
+        $_SESSION['profile_pic'] = $selected_image;
+    }
+}
+
+// Define the function to display all uploaded images
+function display_all_uploaded_images($target_dir)
 {
-    $_SESSION['upload_message'] = "Ingen fil uppladdades eller skickades."; // Meddelande om ingen fil uppladdades eller skickades
+    if (!is_dir($target_dir)) {
+        error_log("Directory $target_dir does not exist");
+        print("<p>Inga bilder uppladdade ännu.</p>");
+        return;
+    }
+
+    $images = array_diff(scandir($target_dir), array('..', '.'));
+
+    // Filtrera för att bara visa bildfiler
+    $image_files = array_filter($images, function ($file) use ($target_dir) {
+        $image_file_type = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        return in_array($image_file_type, ['jpg', 'jpeg', 'png']);
+    });
+
+    if (count($image_files) === 0) {
+        print("<p>Inga bilder uppladdade ännu.</p>");
+    } else {
+        print("<h2>Alla uppladdade bilder</h2><div class='image-gallery'>");
+
+        foreach ($image_files as $image) {
+            $image_path = $target_dir . $image;
+            $profile_pic_class = '';
+
+            if (isset($_SESSION['profile_pic']) && $_SESSION['profile_pic'] === $image) {
+                $profile_pic_class = ' profile-pic'; // Gör profilbilden mer synlig
+            }
+
+            print("<div class='image-container $profile_pic_class'>");
+            print("<form action='' method='post' class='image-form'>");
+            print("<input type='hidden' name='profile_pic' value='$image'>");
+            print("<img src='$image_path' alt='Uppladdad bild' class='selectable-image' style='max-width: 100%; height: auto;'>");
+            print("</form>");
+            print("</div>");
+        }
+        print("</div>");
+    }
 }
 ?>
 

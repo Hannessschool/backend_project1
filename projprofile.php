@@ -1,69 +1,22 @@
 <?php
 include "projhandy_methods.php"; // Inkludera hjälpfunktioner
+include "projupload.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-//checka om användaren är inloggad
-if (!isset($_SESSION['username'])) {
-    header("Location: projlogin.php");
-    exit();
-}
 
 if (isset($_POST['save_desc'])) {
     $profile_desc = htmlspecialchars($_POST['profile_desc']);
-    // Save the profile description to a file
-    file_put_contents('profile_desc.txt', $profile_desc);
-    $_SESSION['profile_desc_updated'] = true;
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-
-if (isset($_POST['profile_pic'])) {
-    $selected_image = $_POST['profile_pic'];
-    if ($selected_image) {
-        // Save the selected image as profile picture in session
-        $_SESSION['profile_pic'] = $selected_image;
-    }
-}
-
-// Define the function to display all uploaded images
-function display_all_uploaded_images($target_dir)
-{
-    if (!is_dir($target_dir)) {
-        error_log("Directory $target_dir does not exist");
-        print("<p>Inga bilder uppladdade ännu.</p>");
-        return;
-    }
-
-    $images = array_diff(scandir($target_dir), array('..', '.'));
-
-    // Filtrera för att bara visa bildfiler
-    $image_files = array_filter($images, function ($file) use ($target_dir) {
-        $image_file_type = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        return in_array($image_file_type, ['jpg', 'jpeg', 'png']);
-    });
-
-    if (count($image_files) === 0) {
-        print("<p>Inga bilder uppladdade ännu.</p>");
+    // Save the profile description to a file Spara profilbeskrivningen till en fil
+    if (file_put_contents('profile_desc.txt', $profile_desc) === false) {
     } else {
-        print("<h2>Alla uppladdade bilder</h2><div class='image-gallery'>");
-
-        foreach ($image_files as $image) {
-            $image_path = $target_dir . $image;
-            $profile_pic_class = '';
-
-            if (isset($_SESSION['profile_pic']) && $_SESSION['profile_pic'] === $image) {
-                $profile_pic_class = ' profile-pic'; // Gör profilbilden mer synlig
-            }
-
-            print("<div class='image-container $profile_pic_class'>");
-            print("<form action='' method='post' class='image-form'>");
-            print("<input type='hidden' name='profile_pic' value='$image'>");
-            print("<img src='$image_path' alt='Uppladdad bild' class='selectable-image' style='max-width: 100%; height: auto;'>");
-            print("</form>");
-            print("</div>");
-        }
-        print("</div>");
+        $_SESSION['profile_desc_updated'] = true;
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="sv">
@@ -95,6 +48,8 @@ function display_all_uploaded_images($target_dir)
                 print("<img src='$profile_pic' alt='Profile Picture' style='width: 200px; height: auto;'>");
             }
             ?>
+
+            <!-- Profilbeskrivningsruta som visar den -->
             <div class='profile-description-container'>
                 <h2>Profilbeskrivning</h2>
                 <?php
@@ -122,8 +77,8 @@ function display_all_uploaded_images($target_dir)
             </form>
             <?php
             if (isset($_SESSION['profile_desc_updated'])) {
-                print("<p>Profilbeskrivning uppdaterad!</p>"); //meddelande som bekräftar lyckad postande av profilbeskrivning
-                unset($_SESSION['profile_desc_updated']); //nollställ sessionvariabeln
+                print("<p>Profilbeskrivning uppdaterad!</p>");
+                unset($_SESSION['profile_desc_updated']);
             }
             ?>
             <h2>Kommentarsfält</h2>
@@ -143,17 +98,6 @@ function display_all_uploaded_images($target_dir)
         </section>
     </div>
     <script>
-        function clearTextarea() {
-            document.querySelector('textarea[name="profile_desc"]').value = '';
-        }
-
-        window.onload = function() {
-            var urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('updated') && urlParams.get('updated') === 'true') {
-                clearTextarea();
-            }
-        };
-
         document.addEventListener('DOMContentLoaded', function() {
             const images = document.querySelectorAll('.selectable-image');
             images.forEach(image => {

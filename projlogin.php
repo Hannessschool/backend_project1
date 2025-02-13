@@ -1,7 +1,6 @@
 <?php
 include_once "projhandy_methods.php"; // Inkludera hjälpfunktioner
 include_once "projpasswordhandling.php"; // Inkludera lösenordshantering
-include "projregister.php";
 
 $register_message = isset($_SESSION['register_message']) ? $_SESSION['register_message'] : ''; // Hämta registreringsmeddelande från sessionen
 unset($_SESSION['register_message']); // Ta bort registreringsmeddelandet från sessionen
